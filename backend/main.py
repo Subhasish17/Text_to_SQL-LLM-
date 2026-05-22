@@ -7,7 +7,7 @@ import backend.config as config
 from backend.database import init_databases, sql_conn
 from backend.pipeline import text_to_sql
 
-app = FastAPI(title="Text-to-SQL Dynamic API")
+app = FastAPI(title="Text-to-SQL Dynamic API (Groq Edition)")
 
 # Global variables to hold state after an upload
 TABLE_NAME = None
@@ -18,7 +18,7 @@ class QueryRequest(BaseModel):
 
 @app.post("/api/upload")
 async def upload_file(file: UploadFile = File(...)):
-    """Receives a file, saves it, and builds the in-memory databases instantly."""
+    """Receives a file, saves it, and builds the in-memory SQLite database instantly."""
     global TABLE_NAME, ALL_COLUMNS
     
     if not os.path.exists(config.DATA_DIR):
@@ -33,7 +33,7 @@ async def upload_file(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    # Build Qdrant and SQLite in RAM
+    # Build SQLite in RAM
     try:
         TABLE_NAME, ALL_COLUMNS = init_databases()
         return {"message": f"Successfully processed {file.filename}", "columns": ALL_COLUMNS}
@@ -42,7 +42,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/api/query")
 async def process_query(request: QueryRequest):
-    """Executes English queries against the uploaded data."""
+    """Executes English queries against the uploaded data using Groq."""
     if not TABLE_NAME or not ALL_COLUMNS:
         raise HTTPException(status_code=400, detail="No data loaded. Please upload a file first.")
         

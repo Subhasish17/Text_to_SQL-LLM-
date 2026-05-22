@@ -4,7 +4,7 @@ import pandas as pd
 
 # Page Configuration
 st.set_page_config(page_title="AI Data Explorer", layout="wide", initial_sidebar_state="expanded")
-st.title("🤖 Controlled Data Discovery Dashboard")
+st.title("⚡ Groq-Powered Data Dashboard")
 st.caption("Upload a file, then ask questions in plain English to instantly generate and execute SQL.")
 
 # API Endpoints
@@ -21,13 +21,13 @@ if 'data_ready' not in st.session_state:
 # ==========================================
 with st.sidebar:
     st.header("📂 Data Source")
-    st.write("Upload a dataset to initialize the memory databases.")
+    st.write("Upload a dataset to initialize the memory database.")
     
     uploaded_file = st.file_uploader("Upload CSV or JSON", type=['csv', 'json'])
     
     if uploaded_file is not None:
-        if st.button("Process & Index File", type="primary", use_container_width=True):
-            with st.spinner("Building zero-latency memory databases..."):
+        if st.button("Process & Load File", type="primary", use_container_width=True):
+            with st.spinner("Loading data into pure-RAM SQLite database..."):
                 try:
                     # Prepare the file to be sent via POST request
                     files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
@@ -64,7 +64,8 @@ if st.session_state.get('data_ready'):
 
     if st.button("Generate & Run Query"):
         if user_input.strip():
-            with st.spinner("Thinking and compiling SQL via Gemini..."):
+            # Updated spinner text for Groq
+            with st.spinner("Compiling SQL at lightning speed via Groq..."):
                 try:
                     api_response = requests.post(QUERY_ENDPOINT, json={"prompt": user_input})
                     
@@ -99,14 +100,14 @@ if st.session_state.get('data_ready'):
         else:
             st.warning("Please type a question into the text field.")
 else:
-    # Placeholder state when no data is loaded
+    # Updated placeholder state for the new architecture
     st.info("👈 Please upload and process a CSV or JSON file from the sidebar to begin.")
     st.markdown("---")
     st.markdown("""
     ### How it works:
     1. **Upload** your dataset via the sidebar.
-    2. The backend **instantly vectors** your schemas into a pure-RAM Qdrant database.
+    2. The backend **instantly loads** your data into a pure-RAM SQLite database.
     3. Type your question in **plain English**.
-    4. Gemini parses your intent against the vector space and generates **deterministic SQL**.
-    5. The SQL executes directly against an **in-memory SQLite** cluster for zero-latency rendering.
+    4. **Groq (Llama 3)** reads your schema and generates **deterministic SQL** at lightning speed.
+    5. The SQL executes directly against your data for zero-latency rendering.
     """)
